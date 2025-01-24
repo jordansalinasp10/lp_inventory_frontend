@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 class ProductsListScreen extends StatefulWidget {
+  const ProductsListScreen({super.key});
+
   @override
   _ProductsListScreenState createState() => _ProductsListScreenState();
 }
 
 class _ProductsListScreenState extends State<ProductsListScreen> {
   final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://8b39-157-100-108-8.ngrok-free.app/', // Reemplaza con tu URL base
+    baseUrl: 'https://2ac4-157-100-108-8.ngrok-free.app/',
 
   ));
 

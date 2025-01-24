@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import './products/presentation/products_list_screen.dart';
+import 'package:lp_inventory_frontend/presentation/screens/home/home_screen.dart';
+import 'presentation/products/products_list_screen.dart';
 
 void main() {
-  // runApp(MaterialApp(
-  //   home: ProductsListScreen(),
-  // ));
   runApp(MyApp());
 }
 
@@ -16,29 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(colorSchemeSeed: Colors.deepPurpleAccent),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text('Lp Inventory'),
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // Text(
-                //   'Inventory LP ',
-                //   style: TextStyle(fontSize: 20),
-                // ),
-                Image.asset('assets/inventor.png', fit: BoxFit.cover),
-                ElevatedButton(
-                    onPressed: () => {
-                          // olap
-                        },
-                    child: const Text('Iniciar',
-                    style: TextStyle(fontSize: 40 )),
-                    )
-              ],
-            ),
-          ),
-        ));
+        home: HomeScreen()
+    );
   }
 }
