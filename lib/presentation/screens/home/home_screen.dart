@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lp_inventory_frontend/config/router/app_router.dart';
 import 'package:lp_inventory_frontend/presentation/menu/menu_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,8 +18,8 @@ class HomeScreen extends StatelessWidget {
             Image.asset('assets/inventor.png', fit: BoxFit.cover),
             ElevatedButton(
               onPressed: () => {
-                runApp(MaterialApp(
-                  home: menuScreen(),
+                runApp(MaterialApp.router(
+                  routerConfig: appRouter
                 ))
               },
               child: const Text('Iniciar', style: TextStyle(fontSize: 40)),

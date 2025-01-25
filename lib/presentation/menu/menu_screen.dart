@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lp_inventory_frontend/config/theme/menu_items.dart';
-import 'package:lp_inventory_frontend/presentation/products/products_list_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lp_inventory_frontend/config/menu/menu_items.dart';
 
 class menuScreen extends StatelessWidget {
   const menuScreen({super.key});
@@ -16,7 +16,6 @@ class menuScreen extends StatelessWidget {
   }
 }
 
-
 class _MenuView extends StatelessWidget {
   const _MenuView();
 
@@ -26,7 +25,6 @@ class _MenuView extends StatelessWidget {
       itemCount: appMenuItems.length,
       itemBuilder:  (context, index) {
         final menuItem = appMenuItems[index];
-
         return _CustomListTitle(menuItem: menuItem);
       }
     );
@@ -47,13 +45,8 @@ class _CustomListTitle extends StatelessWidget {
       title: Text(menuItem.title),
       subtitle: Text(menuItem.subTitle),
       onTap: () => {
-        //NAVEGAR A OTRA PANTALLA
-        Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => const ProductsListScreen()),
-  ),
+        context.push(menuItem.link)
       },
-      
     );
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class MenuItem {
@@ -16,15 +15,21 @@ class MenuItem {
 
 const appMenuItems = <MenuItem> [
   MenuItem(
-    title: 'Product List',
-    subTitle: 'Inventario actual a la fecha',
+    title: 'Inventory',
+    subTitle: 'Completed and updated inventory',
     link: '/inventory',
     icon: Icons.inventory,
   ),
   MenuItem(
-    title: 'Buscar productos',
-    subTitle: 'Buscar por SKU',
-    link: '/searchInventory',
+    title: 'Create product',
+    subTitle: 'Add a product',
+    link: '/inventory',
     icon: Icons.shopping_bag,
+  ),
+  MenuItem(
+    title: 'Text connection',
+    subTitle: 'Test basic with backend',
+    link: '/test',
+    icon: Icons.psychology_alt_outlined,
   )
 ];

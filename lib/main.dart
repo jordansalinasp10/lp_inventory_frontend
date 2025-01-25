@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lp_inventory_frontend/presentation/screens/home/home_screen.dart';
-import 'presentation/products/products_list_screen.dart';
+import 'presentation/screens/products/products_list_screen.dart';
 
 void main() {
   runApp(MyApp());
