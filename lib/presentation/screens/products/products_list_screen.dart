@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ProductsListScreen extends StatefulWidget {
   const ProductsListScreen({super.key});
@@ -10,8 +11,7 @@ class ProductsListScreen extends StatefulWidget {
 
 class _ProductsListScreenState extends State<ProductsListScreen> {
   final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://dd26-157-100-108-8.ngrok-free.app/',
-
+      baseUrl: dotenv.env['API_URL'] ?? 'localhost:8000/'
   ));
 
   List<Map<String, dynamic>> products = [];

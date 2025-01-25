@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lp_inventory_frontend/presentation/screens/products/product_details_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -9,9 +11,8 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://dd26-157-100-108-8.ngrok-free.app/',
-  ));
+  final Dio dio =
+      Dio(BaseOptions(baseUrl: dotenv.env['API_URL'] ?? 'localhost:8000/'));
 
   List<Map<String, dynamic>> products = [];
   List<Map<String, dynamic>> filteredProducts = [];
@@ -46,11 +47,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final query = searchController.text.toLowerCase();
     setState(() {
       filteredProducts = products
-          .where((product) =>
-              (product['product_name'] ?? '')
-                  .toString()
-                  .toLowerCase()
-                  .contains(query))
+          .where((product) => (product['product_name'] ?? '')
+              .toString()
+              .toLowerCase()
+              .contains(query))
           .toList();
     });
   }
@@ -107,8 +107,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 vertical: 8.0, horizontal: 10.0),
                             child: ListTile(
                               leading: FutureBuilder<String>(
-                                future: getSignedImageUrl(
-                                    product['product_code']),
+                                future:
+                                    getSignedImageUrl(product['product_code']),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -118,13 +118,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                       snapshot.data!.isEmpty) {
                                     return const CircleAvatar(
                                       radius: 25,
-                                      child: Icon(
-                                          Icons.image_not_supported),
+                                      child: Icon(Icons.image_not_supported),
                                     );
                                   } else {
                                     return ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(8.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                       child: Image.network(
                                         snapshot.data!,
                                         width: 50,
@@ -145,20 +143,27 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 children: [
                                   Text(
                                     'SKU: ${product['product_code']}',
-                                    style:
-                                        TextStyle(color: Colors.grey[600]),
+                                    style: TextStyle(color: Colors.grey[600]),
                                   ),
                                   Text(
                                     'Quantity: ${product['quantity'] ?? 'N/A'}',
-                                    style:
-                                        TextStyle(color: Colors.grey[600]),
+                                    style: TextStyle(color: Colors.grey[600]),
+                                  ),
+                                  Text(
+                                    'Categoria: ${product['category']['category_name'] ?? 'N/A'}',
+                                    style: TextStyle(color: Colors.grey[600]),
                                   ),
                                 ],
                               ),
-                              trailing:
-                                  const Icon(Icons.arrow_forward_ios),
+                              trailing: const Icon(Icons.arrow_forward_ios),
                               onTap: () {
-                                // Acción al tocar el producto
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProductDetailScreen(product: product),
+                                  ),
+                                );
                               },
                             ),
                           );

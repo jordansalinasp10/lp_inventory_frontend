@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lp_inventory_frontend/presentation/screens/home/home_screen.dart';
-import 'presentation/screens/products/products_list_screen.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  
   const MyApp({super.key});
 
   @override
