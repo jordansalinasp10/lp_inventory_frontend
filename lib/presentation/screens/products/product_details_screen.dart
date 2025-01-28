@@ -19,13 +19,12 @@ class ProductDetailScreen extends StatelessWidget {
     }
   }
 
-  Future<String> getSignedImageUrl(String productCode) async {
+  Future<Map<String, dynamic>> getCategoryDetails(int categoryId) async {
     try {
-      final response =
-          await dio.get<Map<String, dynamic>>('image/$productCode');
-      return response.data?['signed_image_url'] ?? '';
+      final response = await dio.get<Map<String, dynamic>>('categories/$categoryId');
+      return response.data ?? {};
     } catch (e) {
-      return '';
+      return {};
     }
   }
 
@@ -40,39 +39,25 @@ class ProductDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FutureBuilder<String>(
-              future: getSignedImageUrl(product['product_code']),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: 100,
-                    ),
-                  );
-                } else {
-                  return AspectRatio(
+            product['image_url'] != null && product['image_url'].isNotEmpty
+                ? AspectRatio(
                     aspectRatio: 1 / 1, // Square aspect ratio, adjust as needed
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(snapshot.data!),
-                          fit:
-                              BoxFit.cover, 
+                          image: NetworkImage(product['image_url']),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                  );
-                }
-              },
-            ),
+                  )
+                : const Center(
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 100,
+                    ),
+                  ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -106,11 +91,7 @@ class ProductDetailScreen extends StatelessWidget {
                               icon: Icons.inventory,
                               label: 'Quantity',
                               value: (product['quantity'] ?? 'N/A').toString()),
-                          const SizedBox(height: 8),
-                          _buildDetailRow(context,
-                              icon: Icons.calendar_today,
-                              label: 'Date',
-                              value: formatDate(product['created_at'])),
+                  
                         ],
                       ),
                     ),
@@ -122,45 +103,60 @@ class ProductDetailScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildDetailRow(context,
-                              icon: Icons.category,
-                              label: 'Name',
-                              value: product['category']['category_name'] ??
-                                  'N/A'),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Description:',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: getCategoryDetails(product['category']),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError || !snapshot.hasData) {
+                        return const Center(
+                          child: Text('Failed to load category data'),
+                        );
+                      } else {
+                        final category = snapshot.data!;
+                        return Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            product['category']['category_description'] ??
-                                'No description available',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Colors.grey[700],
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildDetailRow(context,
+                                    icon: Icons.category,
+                                    label: 'Name',
+                                    value: category['category_name'] ?? 'N/A'),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Description:',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  category['category_description'] ??
+                                      'No description available',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Colors.grey[700],
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),

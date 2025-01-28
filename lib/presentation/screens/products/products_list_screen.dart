@@ -11,52 +11,74 @@ class ProductsListScreen extends StatefulWidget {
 
 class _ProductsListScreenState extends State<ProductsListScreen> {
   final Dio dio = Dio(BaseOptions(
-      baseUrl: dotenv.env['API_URL'] ?? 'localhost:8000/'
-  ));
+      baseUrl: dotenv.env['API_URL'] ?? 'localhost:8000/'));
 
   List<Map<String, dynamic>> products = [];
+  List<Map<String, dynamic>> categories = [];
   bool isLoading = true;
   String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    fetchData();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
     try {
-      final response = await dio.get<List<dynamic>>('products/');
+      final responses = await Future.wait([
+        dio.get<List<dynamic>>('products/'),
+        dio.get<List<dynamic>>('categories/'),
+      ]);
+
       setState(() {
-        products = List<Map<String, dynamic>>.from(response.data ?? []);
+        products = List<Map<String, dynamic>>.from(responses[0].data ?? []);
+        categories = List<Map<String, dynamic>>.from(responses[1].data ?? []);
         isLoading = false;
       });
     } catch (e) {
       setState(() {
-        errorMessage = 'Error fetching products: $e';
+        errorMessage = 'Error fetching data: $e';
         isLoading = false;
       });
     }
+  }
+
+  String getCategoryNameById(int categoryId) {
+    final category = categories.firstWhere(
+      (cat) => cat['id'] == categoryId,
+      orElse: () => {'name': 'Unknown'}, 
+    );
+    return category['name'] ?? 'Unknown';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product List'),
+        title: const Text('Product List'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Indicador de carga
+          ? const Center(child: CircularProgressIndicator()) // Indicador de carga
           : errorMessage != null
-              ? Center(child: Text(errorMessage!)) // Mensaje de error
+              ? Center(child: Text(errorMessage!)) 
               : ListView.builder(
                   itemCount: products.length,
                   itemBuilder: (context, index) {
                     final product = products[index];
+                    final categoryId = product['category'];
+                    final categoryName = getCategoryNameById(categoryId);
+
                     return ListTile(
                       title: Text(product['product_name'] ?? 'No name'),
                       subtitle: Text(
-                          'Price: \$${product['price']?.toStringAsFixed(2) ?? 'N/A'}'),
+                          'Category: $categoryName\nPrice: \$${product['price']?.toStringAsFixed(2) ?? 'N/A'}'),
+                      isThreeLine: true,
                     );
                   },
                 ),

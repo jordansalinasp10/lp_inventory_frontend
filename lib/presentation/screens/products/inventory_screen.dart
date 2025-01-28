@@ -15,6 +15,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       Dio(BaseOptions(baseUrl: dotenv.env['API_URL'] ?? 'localhost:8000/'));
 
   List<Map<String, dynamic>> products = [];
+  List<Map<String, dynamic>> categories = [];
   List<Map<String, dynamic>> filteredProducts = [];
   final TextEditingController searchController = TextEditingController();
   bool isLoading = true;
@@ -23,21 +24,31 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    fetchData();
     searchController.addListener(_filterProducts);
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
     try {
-      final response = await dio.get<List<dynamic>>('products/');
+      final responses = await Future.wait([
+        dio.get<List<dynamic>>('products/'),
+        dio.get<List<dynamic>>('categories/'),
+      ]);
+
       setState(() {
-        products = List<Map<String, dynamic>>.from(response.data ?? []);
-        filteredProducts = products; // Inicialmente muestra todos
+        products = List<Map<String, dynamic>>.from(responses[0].data ?? []);
+        categories = List<Map<String, dynamic>>.from(responses[1].data ?? []);
+        filteredProducts = products;
         isLoading = false;
       });
     } catch (e) {
       setState(() {
-        errorMessage = 'Error fetching products: $e';
+        errorMessage = 'Error fetching data: $e';
         isLoading = false;
       });
     }
@@ -53,6 +64,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
               .contains(query))
           .toList();
     });
+  }
+
+  String getCategoryNameById(int categoryId) {
+    final category = categories.firstWhere(
+      (cat) => cat['id'] == categoryId,
+      orElse: () => {'category_name': 'Unknown'}, // Default value if not found
+    );
+    return category['category_name'] ?? 'Unknown';
   }
 
   Future<String> getSignedImageUrl(String productCode) async {
@@ -101,38 +120,30 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
                           final product = filteredProducts[index];
+                          final categoryId = product['category'];
+                          final categoryName = getCategoryNameById(categoryId);
 
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 10.0),
                             child: ListTile(
-                              leading: FutureBuilder<String>(
-                                future:
-                                    getSignedImageUrl(product['product_code']),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
-                                  } else if (snapshot.hasError ||
-                                      !snapshot.hasData ||
-                                      snapshot.data!.isEmpty) {
-                                    return const CircleAvatar(
-                                      radius: 25,
-                                      child: Icon(Icons.image_not_supported),
-                                    );
-                                  } else {
-                                    return ClipRRect(
+                              leading: product['image_url'] != null &&
+                                      product['image_url'] != ''
+                                  ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
                                       child: Image.network(
-                                        snapshot.data!,
+                                        product[
+                                            'image_url'], // Usamos directamente el URL de la imagen
                                         width: 50,
                                         height: 50,
                                         fit: BoxFit.cover,
                                       ),
-                                    );
-                                  }
-                                },
-                              ),
+                                    )
+                                  : const CircleAvatar(
+                                      radius: 25,
+                                      child: Icon(Icons
+                                          .image_not_supported), // Icono en caso de no tener imagen
+                                    ),
                               title: Text(
                                 product['product_name'] ?? 'No name',
                                 style: const TextStyle(
@@ -150,7 +161,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                     style: TextStyle(color: Colors.grey[600]),
                                   ),
                                   Text(
-                                    'Categoria: ${product['category']['category_name'] ?? 'N/A'}',
+                                    'Categoria: $categoryName',
                                     style: TextStyle(color: Colors.grey[600]),
                                   ),
                                 ],

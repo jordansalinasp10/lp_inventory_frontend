@@ -19,6 +19,7 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () => {
                 runApp(MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
                   routerConfig: appRouter
                 ))
               },
