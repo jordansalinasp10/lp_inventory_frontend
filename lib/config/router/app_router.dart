@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:lp_inventory_frontend/presentation/menu/menu_screen.dart';
+import 'package:lp_inventory_frontend/presentation/screens/products/create_product_screen.dart';
 import 'package:lp_inventory_frontend/presentation/screens/screens.dart';
 
 // GoRouter configuration
@@ -14,15 +15,17 @@ final appRouter = GoRouter(
       path: '/inventory',
       builder: (context, state) => InventoryScreen(),
     ),
-
     GoRoute(
       path: '/test',
       builder: (context, state) => ProductsListScreen(),
     ),
-
     GoRoute(
       path: '/home',
       builder: (context, state) => HomeScreen(),
+    ),
+    GoRoute(
+      path: '/createProduct',
+      builder: (context, state) => CreateProductScreen(),
     ),
   ],
 );

@@ -68,8 +68,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   String getCategoryNameById(int categoryId) {
     final category = categories.firstWhere(
-      (cat) => cat['id'] == categoryId,
-      orElse: () => {'category_name': 'Unknown'}, // Default value if not found
+      (cat) => cat['category_id'] == categoryId,
+      orElse: () => {'category_name': 'Unknown'},
     );
     return category['category_name'] ?? 'Unknown';
   }

@@ -6,14 +6,14 @@ class MenuItem {
   final String link;
   final IconData icon;
 
-  const MenuItem({
-    required this.title, 
-    required this.subTitle,
-    required this.link, 
-    required this.icon});
+  const MenuItem(
+      {required this.title,
+      required this.subTitle,
+      required this.link,
+      required this.icon});
 }
 
-const appMenuItems = <MenuItem> [
+const appMenuItems = <MenuItem>[
   MenuItem(
     title: 'Inventory',
     subTitle: 'Completed and updated inventory',
@@ -23,7 +23,7 @@ const appMenuItems = <MenuItem> [
   MenuItem(
     title: 'Create product',
     subTitle: 'Add a product',
-    link: '/inventory',
+    link: '/createProduct',
     icon: Icons.shopping_bag,
   ),
   MenuItem(
