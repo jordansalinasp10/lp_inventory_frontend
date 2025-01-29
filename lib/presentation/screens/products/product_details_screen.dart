@@ -21,7 +21,8 @@ class ProductDetailScreen extends StatelessWidget {
 
   Future<Map<String, dynamic>> getCategoryDetails(int categoryId) async {
     try {
-      final response = await dio.get<Map<String, dynamic>>('categories/$categoryId');
+      final response =
+          await dio.get<Map<String, dynamic>>('categories/$categoryId');
       return response.data ?? {};
     } catch (e) {
       return {};
@@ -91,7 +92,11 @@ class ProductDetailScreen extends StatelessWidget {
                               icon: Icons.inventory,
                               label: 'Quantity',
                               value: (product['quantity'] ?? 'N/A').toString()),
-                  
+                          const SizedBox(height: 8),
+                          _buildDetailRow(context,
+                              icon: Icons.price_change_sharp,
+                              label: 'Price',
+                              value: (product['price'] ?? 'N/A').toString()),
                         ],
                       ),
                     ),

@@ -70,7 +70,6 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
       );
 
       final imageUrl = response.data?['image_url'];
-      print('📸 Imagen subida con éxito: $imageUrl');
       return imageUrl;
     } catch (e) {
       setState(() {
@@ -100,7 +99,6 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     String? imageUrl;
     if (selectedImage != null) {
       imageUrl = await uploadImage(selectedImage!, productCodeController.text);
-      print('Image URL: $imageUrl');
       if (imageUrl == null) {
         setState(() {
           isLoading = false;
@@ -117,10 +115,10 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
       'category': int.parse(selectedCategory!),
       'image_url': imageUrl,
     };
-    print('🛒 Payload enviado al backend: ${jsonEncode(productData)}');
 
     try {
       await dio.post('products/create/', data: productData);
+      // ignore: use_build_context_synchronously
       Navigator.pop(context, true);
     } catch (e) {
       setState(() {
